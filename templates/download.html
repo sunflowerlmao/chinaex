@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Загрузка файлов</title>
+</head>
+<body>
+    <form method="POST" enctype="multipart/form-data">
+        <p>Графемы ( Графемы.zip )</p>
+        <input type="file" name="graf" accept=".zip">
+        <p>Иероглифы ( Иероглифы.zip )</p>
+        <input type="file" name="ier" accept=".zip">
+        <p>База графем и иероглифов ( БазаИероглифов.txt )</p>
+        <input type="file" name="baza" accept=".txt">
+        <p>Шаблон ( Шаблон.txt )</p>
+        <input type="file" name="shablon" accept=".txt">
+        <input type="submit" value="Загрузить">
+        <form action="http://127.0.0.1:5000/clear">
+        <button>Очистить папки</button>
+        </form>
+    </form>
+</body>
+</html>
