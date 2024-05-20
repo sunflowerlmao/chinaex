@@ -33,6 +33,8 @@ def foundindex(a):
         if bd[i][0] == a[:-4]:
             zadach[0] = bd[i][0]
             zadach[1] = bd[i][1]
+    for j in range(0,len(zadach[1])):
+        zadach[1][j] += '.png'
 
 
 def selfile(a):
@@ -45,12 +47,17 @@ def selfile(a):
 def sortir(a):
     b = selfile(a)
     dostup = []
+    clearr = []
     for i in range(0, len(bd) - 1):
         if all(elem in bd[i][1] for elem in b):
             for elem in bd[i][1]:
                 if (elem + '.png') not in dostup:
                     dostup.append(elem + ".png")
-    print(dostup)
+    for j in range(0,len(a)-1):
+        if a.count(a[j]) >= 3:
+            clearr.append(a[j])
+    for g in range(0,len(clearr)-1):
+        dostup.remove(clearr[g])
     if len(a) > 0:
         return dostup
     else:
@@ -64,12 +71,6 @@ def logfilewrite(f):
         n += 1
     logfile.writelines(f)
     logfile.close()
-
-def checktest(a,b):
-    global k
-    if a == b:
-        k += 1
-
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -95,24 +96,42 @@ def test():
     return render_template('test.html', folder1_images=folder1_images, folder2_image=folder2_image,
                            selected_grafs=selected_grafs)
 
-
+@app.route('/set_remove', methods=['POST'])
+def set_remove():
+    global isremove
+    remove = request.form.get('remove')
+    isremove = remove
+    print(isremove)
+    return jsonify({'status': 'ok'})
+@app.route('/submit_selected_grafems', methods=['POST'])
+def submit_selected_grafems():
+    global k
+    selected_grafs1 = request.form['selected_grafs']
+    zadacha = zadach[1]
+    if selected_grafs.sort() == zadacha.sort():
+        k += 1
+        print(selected_grafs, zadacha)
+        selected_grafs.clear()
+        return redirect(url_for('test'))
+    print(selected_grafs,zadacha)
+    return jsonify({'status': 'ok'})
 @app.route('/select_image', methods=['POST'])
 def select_image():
     global selected_grafs
     global timetest
     image_name = request.form['image_name']
-    if image_name not in selected_grafs:
-        selected_grafs.append(image_name)
-        print('add', selected_grafs)
-    else:
+    if isremove:
         selected_grafs.remove(image_name)
         print('del', selected_grafs)
+    else:
+        selected_grafs.append(image_name)
+        print('add', selected_grafs)
+    print('zadach', zadach)
     return jsonify({'selected_grafs': selected_grafs})
 
 
 @app.route('/update_selected_grafs', methods=['POST'])
 def update_selected_grafs():
-    global variable_name
     selected_grafs = request.form['selected_grafs']
     selected_grafs = json.loads(selected_grafs)
     return jsonify({'selected_grafs': selected_grafs})
@@ -124,7 +143,7 @@ def update_timer():
     seconds = request.form['seconds']
     timess = str(hours)+':'+str(minutes)+":"+str(seconds)
     timetest.append(timess)
-    print(timess)
+    print('times',timess)
     # Do something with the timerElapsed variable here
     return jsonify({'status': 'success'})
 

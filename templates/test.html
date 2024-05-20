@@ -12,12 +12,12 @@
 
         .body {
           background-image: url('/static/backgr.jpg'); /* задать изображение фона */
-            background-repeat: no-repeat; /* отключить повторение фона */
+            background-repeat: repeat; /* отключить повторение фона */
             background-size: cover; /* заполнить весь экран */
             display: flex; /* разместить контейнеры на одном уровне */
             height: auto; /* задать высоту контейнера body */
-            margin: 5%;
-            margin-top: 1%;/* убрать отступы по умолчанию */
+            margin: 3%;
+            margin-top: 1%;
             padding: 0; /* убрать отступы по умолчанию */
             font-family: Arial, sans-serif;
         }
@@ -28,9 +28,9 @@
           border: 1px solid #ccc;
           border-radius: 5px;
           box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-          padding: 5%;
+          padding: 1%;
           flex: 1 1 80%;
-          height: 80vh;
+          height: 95vh;
         }
 
         .container2 {
@@ -40,7 +40,7 @@
           box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
           padding: 1%;
           flex: 1 1 20%;
-          height: 80vh;
+          height: 95vh;
         }
 
         .col-4 {
@@ -68,7 +68,6 @@
             width: auto;
             height: 100%;
             margin: 0;
-
         }
 
         .img-fluid {
@@ -76,9 +75,12 @@
           height: 100%;
           object-fit: cover;
           align-items: center;
+          margin-top: 0;
         }
 
         .ier {
+          margin-top: 0;
+          margin-bottom: 0;
           height: auto;
           width: 100%;
         }
@@ -97,13 +99,14 @@
   </div>
   <div class="container2">
             <div id="timer" style="font-size:50px; width: auto; flex-grow: 1; margin-right: 1rem;"></div>
-            <h1 style="font-size:100px; width: auto; flex-grow: 1; margin-right: 1rem;">Задание:</h1>
+            <h1 style="margin-top:0; font-size:75px; width: auto; flex-grow: 1; margin-right: 1rem;">Задание:</h1>
             <img src="{{ url_for('static', filename='ierog/' + folder2_image) }}" alt="{{ folder2_image }}" class="ier" id="ier-image">
-              <h3 style="font-size:50px; width: auto; flex-grow: 1; margin-right: 1rem;">Selected Grafems:</h3>
+              <h3 style="margin-top:0;font-size:50px; width: auto; flex-grow: 1; margin-right: 1rem;">Selected Grafems:</h3>
               <div id="selected-grafems" class="col-12">
                    {% for image in selected_grafs %}
-                      <img src="{{ url_for('static', filename='graf/' + image) }}" alt="{{ image }}" class="img-fluid" onclick="selectImage('{{ image }}', true)" style="width: 50px;">
+                      <img src="{{ url_for('static', filename='graf/' + image) }}" alt="{{ image }}" class="img-fluid" onclick="selectImage('{{ image }}', true)" style="width: 50px; margin-top: 0">
                    {% endfor %}
+              <button id="submit-button" onclick="submitSelectedGrafems()">Подтвердить иероглиф</button>
               </div>
   </div>
     <script>
@@ -175,6 +178,18 @@
         getTimerFromLocalStorage();
         startTimer();
 
+        function submitSelectedGrafems() {
+            $.ajax({
+                url: '/submit_selected_grafems',
+                type: 'POST',
+                data: {selected_grafs: JSON.stringify(selected_grafs)},
+                success: function(response) {
+                    console.log('Selected grafems submitted successfully');
+                    // Обработка успешного ответа от сервера
+                }
+            });
+            location.reload()
+        }
 
         let selected_grafs = {{ selected_grafs|tojson|safe }};
 
@@ -200,6 +215,17 @@
                     for (var i = 0; i < selected_grafs.length; i++) {
                         list.append('<img src="/static/graf/' + selected_grafs[i] + '" alt="' + selected_grafs[i] + '" class="img-fluid" onclick="selectImage(\'' + selected_grafs[i] + '\', true)"style="width: 100%;height: auto;display: flex;">');
                     }
+                }
+            });
+            $.ajax({
+                url: '/set_remove',
+                type: 'POST',
+                data: {
+                    remove: remove
+                },
+                success: function(response) {
+                    // Обработка успешного ответа от сервера
+                    // Здесь ничего не делаем
                 }
             });
             $.ajax({
