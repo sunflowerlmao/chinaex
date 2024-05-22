@@ -54,10 +54,8 @@ def sortir(a):
                 if (elem + '.png') not in dostup:
                     dostup.append(elem + ".png")
     for j in range(0,len(a)-1):
-        if a.count(a[j]) >= 3:
+        if a.count(a[j]) >= 9:
             clearr.append(a[j])
-    for g in range(0,len(clearr)-1):
-        dostup.remove(clearr[g])
     if len(a) > 0:
         return dostup
     else:
