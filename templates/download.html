@@ -1,10 +1,84 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <title>Загрузка файлов</title>
+    <style>
+        * {
+          box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            background-image: url('/static/backgr.jpg'); /* задать изображение фона */
+            background-repeat: no-repeat; /* отключить повторение фона */
+            background-size: cover; /* заполнить весь экран */
+        }
+
+        form {
+            background-color: rgba(255, 255, 255, 0.7);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        p {
+            margin-bottom: 10px;
+        }
+
+        input[type="file"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        input[type="submit"] {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #3e8e41;
+        }
+
+        form[action="http://127.0.0.1:5000/clear"] {
+            margin-top: 20px;
+        }
+
+        form[action="http://127.0.0.1:5000/clear"] button {
+            padding: 10px 20px;
+            background-color: #ff9800;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        form[action="http://127.0.0.1:5000/clear"] button:hover {
+            background-color: #ff69b4;
+        }
+    </style>
 </head>
-<body>
+<body class="body">
     <form method="POST" enctype="multipart/form-data">
         <p>Графемы ( Графемы.zip )</p>
         <input type="file" name="graf" accept=".zip">
@@ -14,14 +88,10 @@
         <input type="file" name="baza" accept=".txt">
         <p>Шаблон ( shablon.txt )</p>
         <input type="file" name="shablon" accept=".txt">
-        <input type="submit" value="Загрузить">
-        <form action="http://127.0.0.1:5000/clear">
+        <input type="submit" value="Загрузить" style="margin-top:20px">
+    </form>
+    <form action="http://127.0.0.1:5000/clear">
         <button>Очистить папки</button>
-        </form>
     </form>
 </body>
 </html>
-
-
-
-

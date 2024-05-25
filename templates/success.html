@@ -1,10 +1,60 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <title>Загрузка файлов</title>
+    <style>
+        * {
+          box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            background-image: url('/static/backgr.jpg'); /* задать изображение фона */
+            background-repeat: no-repeat; /* отключить повторение фона */
+            background-size: cover; /* заполнить весь экран */
+        }
+
+        #status-message {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: inline-block;
+        }
+
+        #return-button {
+            font-size: 18px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #return-button:hover {
+            background-color: #3e8e41;
+        }
+
+        #return-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
 </head>
-<body>
+<body class="body">
     <h1 id="status-message">Загрузка файлов...</h1>
     <form action="http://127.0.0.1:5000/">
         <button id="return-button" disabled>Вернуться на главную</button>
