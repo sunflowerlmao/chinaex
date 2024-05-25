@@ -1,15 +1,13 @@
 import json
 import time
 import random
-import uuid
-
-from flask import Flask, render_template, request, redirect, url_for, make_response
+from flask import Flask, render_template, request, redirect, url_for, jsonify, session
 import os
-from flask import jsonify
 import zipfile
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
+
 
 f = open('logfile.txt', 'w')
 selected_grafs = []
@@ -18,6 +16,7 @@ k = 0
 zadach = ['', '']
 timetest = []
 logtext = []
+
 def bdload():
     database = open('uploads/database.txt', 'r')
     db = [x.split(':') for x in database]
@@ -70,20 +69,21 @@ def logfilewrite(f):
     logfile.writelines(f)
     logfile.close()
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
 def index():
     return render_template('index.html')
 
 
-@app.route('/test')
+@app.route('/test', methods=['GET', 'POST'])
 def test():
-    global k
-    global selected_grafs
+    global selected_grafs, k
     bdload()
+
     if len(selected_grafs) > 0:
         folder1_images = sortir(selected_grafs)
     else:
         folder1_images = [f for f in os.listdir('static/graf') if os.path.isfile(os.path.join('static/graf', f))]
+
     if k % 2 == 0 or k == 0:
         folder2_image = random.choice([f for f in os.listdir('static/ierog') if os.path.isfile(os.path.join('static/ierog', f))])
         print(folder2_image)
@@ -94,6 +94,11 @@ def test():
     return render_template('test.html', folder1_images=folder1_images, folder2_image=folder2_image,
                            selected_grafs=selected_grafs)
 
+@app.route('/stop', methods=['POST'])
+def stop():
+    session['running'] = False
+    return '', 204
+
 @app.route('/set_remove', methods=['POST'])
 def set_remove():
     global isremove
@@ -101,6 +106,7 @@ def set_remove():
     isremove = remove
     print(isremove)
     return jsonify({'status': 'ok'})
+
 @app.route('/submit_selected_grafems', methods=['POST'])
 def submit_selected_grafems():
     global k
@@ -113,6 +119,7 @@ def submit_selected_grafems():
         return redirect(url_for('test'))
     print(selected_grafs,zadacha)
     return jsonify({'status': 'ok'})
+
 @app.route('/select_image', methods=['POST'])
 def select_image():
     global selected_grafs
@@ -150,20 +157,36 @@ def update_timer():
 def download():
     if request.method == 'POST' and request.files:
         graf = request.files["graf"]
+        path = 'static/graf/'
         if graf.filename:
+            for filename in os.listdir(path):
+                file_path = os.path.join(path, filename)
+                if os.path.isfile(file_path):
+                    os.unlink(file_path)
             graf.save(os.path.join(app.config['UPLOAD_FOLDER'], graf.filename))
             with zipfile.ZipFile('uploads/Графемы.zip', 'r') as zip_ref:
                 zip_ref.extractall('static/graf/')
         ier = request.files["ier"]
+        path = 'static/ierog/'
         if ier.filename:
+            for filename in os.listdir(path):
+                file_path = os.path.join(path, filename)
+                if os.path.isfile(file_path):
+                    os.unlink(file_path)
             ier.save(os.path.join(app.config['UPLOAD_FOLDER'], ier.filename))
             with zipfile.ZipFile('uploads/Иероглифы.zip', 'r') as zip_ref:
                 zip_ref.extractall('static/ierog/')
         baza = request.files["baza"]
+        path = 'uploads/database.txt'
         if baza.filename:
+            if os.path.isfile(path):
+                os.remove(path)
             baza.save(os.path.join(app.config['UPLOAD_FOLDER'], baza.filename))
         shablon = request.files["shablon"]
+        path = 'uploads/shablon.txt'
         if shablon.filename:
+            if os.path.isfile(path):
+                os.remove(path)
             shablon.save(os.path.join(app.config['UPLOAD_FOLDER'], shablon.filename))
         return redirect(url_for('success'))
 
@@ -181,15 +204,18 @@ def clear():
     q = 'static/graf'
     w = 'static/ierog'
     e = 'uploads/'
-    files_to_remove = [os.path.join(q, f) for f in os.listdir(q)]
-    for f in files_to_remove:
-        os.remove(f)
-    files_to_remove = [os.path.join(w, f) for f in os.listdir(w)]
-    for f in files_to_remove:
-        os.remove(f)
-    files_to_remove = [os.path.join(e, f) for f in os.listdir(e)]
-    for f in files_to_remove:
-        os.remove(f)
+    for filename in os.listdir(q):
+        file_path = os.path.join(q, filename)
+        if os.path.isfile(file_path):
+            os.unlink(file_path)
+    for filename in os.listdir(w):
+        file_path = os.path.join(w, filename)
+        if os.path.isfile(file_path):
+            os.unlink(file_path)
+    for filename in os.listdir(e):
+        file_path = os.path.join(e, filename)
+        if os.path.isfile(file_path):
+            os.unlink(file_path)
     return render_template('clear.html')
 
 

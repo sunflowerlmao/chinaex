@@ -2,12 +2,25 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Файлы успешно загружены</title>
+    <title>Загрузка файлов</title>
 </head>
 <body>
-    <h1>Файлы успешно загружены</h1>
+    <h1 id="status-message">Загрузка файлов...</h1>
     <form action="http://127.0.0.1:5000/">
-    <button>Вернуться на главную</button>
+        <button id="return-button" disabled>Вернуться на главную</button>
     </form>
+    <script>
+        let timer = 7;
+        let interval = setInterval(function() {
+            timer--;
+            if (timer > 0) {
+                document.getElementById("status-message").innerHTML = `Загрузка файлов... (${timer} секунд)`;
+            } else {
+                clearInterval(interval);
+                document.getElementById("status-message").innerHTML = "Файлы успешно загружены";
+                document.getElementById("return-button").disabled = false;
+            }
+        }, 1000);
+    </script>
 </body>
 </html>
