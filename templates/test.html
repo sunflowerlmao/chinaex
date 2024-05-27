@@ -126,7 +126,11 @@
                       <img src="{{ url_for('static', filename='graf/' + image) }}" alt="{{ image }}" class="img-fluid" onclick="selectImage('{{ image }}', true)" style="width: 50px; margin-top: 0">
                    {% endfor %}
               </div>
-            <button id="submit-button" style='margin-top: 5px' onclick="submitSelectedGrafems()">Подтвердить иероглиф</button>
+            <form id="grafem-form" onsubmit="submitSelectedGrafems(event)" method="post">
+                <button id="submit-button" style='margin-top: 5px' type="submit">Подтвердить иероглиф</button>
+            </form>
+
+            <div id="error-message" style="color: red;"></div>
     </div>
     <script>
         let count = 0;
@@ -152,17 +156,22 @@
         }
         updateTimer();
 
-        function submitSelectedGrafems() {
+        function submitSelectedGrafems(event) {
+            event.preventDefault(); // Предотвращаем стандартное поведение кнопки submit
             $.ajax({
                 url: '/submit_selected_grafems',
                 type: 'POST',
                 data: {selected_grafs: JSON.stringify(selected_grafs)},
                 success: function(response) {
-                    console.log('Selected grafems submitted successfully');
-                    // Обработка успешного ответа от сервера
+                    if (response.result === 'correct') {
+                        localStorage.removeItem('ierImage');
+                    } else {
+                        $('#error-message').text('Неправильно'); // Показываем ошибку, если ответ неправильный
+                        alert('Неправильно! Пожалуйста, выберите другие графемы.'); // Добавляем уведомление
+                    }
+                    location.reload();
                 }
             });
-            location.reload()
         }
 
         let selected_grafs = {{ selected_grafs|tojson|safe }};

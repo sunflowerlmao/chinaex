@@ -12,10 +12,13 @@ app.config['UPLOAD_FOLDER'] = 'uploads'
 f = open('logfile.txt', 'w')
 selected_grafs = []
 bd = []
-k = 0
 zadach = ['', '']
 timetest = []
 logtext = []
+k = 0
+submitier = [""]
+ierog_files = [f for f in os.listdir('static/ierog') if os.path.isfile(os.path.join('static/ierog', f))]
+
 
 def bdload():
     database = open('uploads/database.txt', 'r')
@@ -42,6 +45,22 @@ def selfile(a):
         cor.append(a[i][:-4])
     return cor
 
+def submitgrafems():
+    zadacha = list(zadach[1])
+    print(zadacha)
+    s = sorted(selected_grafs)
+    z = sorted(zadacha)
+    count = 0
+    if len(s) == len(z):
+        for i in range(len(s)):
+            if s[i] == z[i]:
+                count += 1
+        if count == len(s):
+            return 1
+        else:
+            return 0
+    else:
+        return 0
 
 def sortir(a):
     b = selfile(a)
@@ -56,9 +75,10 @@ def sortir(a):
         if a.count(a[j]) >= 9:
             clearr.append(a[j])
     if len(a) > 0:
-        return dostup
+        return sorted(dostup)
     else:
         return [f for f in os.listdir('static/graf') if os.path.isfile(os.path.join('static/graf', f))]
+
 
 def logfilewrite(f):
     logfile = open('logfile.txt', 'w')
@@ -69,6 +89,14 @@ def logfilewrite(f):
     logfile.writelines(f)
     logfile.close()
 
+def randomier():
+    global ierog_files
+    if not ierog_files:
+        ierog_files = [f for f in os.listdir('static/ierog') if os.path.isfile(os.path.join('static/ierog', f))]
+    file = random.choice(ierog_files)
+    ierog_files.remove(file)
+    return file
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -76,17 +104,25 @@ def index():
 
 @app.route('/test', methods=['GET', 'POST'])
 def test():
-    global selected_grafs, k
+    global selected_grafs,k,getier
     bdload()
-
+    status = submitgrafems()
     if len(selected_grafs) > 0:
         folder1_images = sortir(selected_grafs)
     else:
         folder1_images = [f for f in os.listdir('static/graf') if os.path.isfile(os.path.join('static/graf', f))]
+    print(submitier)
+    if submitier[-1] == "1":
+        submitier.append("0")
+        folder2_image = randomier()
+        print(111111222,folder2_image)
+        foundindex(folder2_image)
+        return render_template('test.html', folder1_images=folder1_images, folder2_image=folder2_image,
+                               selected_grafs=selected_grafs)
 
-    if k % 2 == 0 or k == 0:
-        folder2_image = random.choice([f for f in os.listdir('static/ierog') if os.path.isfile(os.path.join('static/ierog', f))])
-        print(folder2_image)
+    elif k == 0:
+        folder2_image = randomier()
+        print(111111000, randomier())
         foundindex(folder2_image)
         k += 1
     else:
@@ -94,31 +130,24 @@ def test():
     return render_template('test.html', folder1_images=folder1_images, folder2_image=folder2_image,
                            selected_grafs=selected_grafs)
 
-@app.route('/stop', methods=['POST'])
-def stop():
-    session['running'] = False
-    return '', 204
-
 @app.route('/set_remove', methods=['POST'])
 def set_remove():
     global isremove
     remove = request.form.get('remove')
     isremove = remove
-    print(isremove)
     return jsonify({'status': 'ok'})
 
 @app.route('/submit_selected_grafems', methods=['POST'])
 def submit_selected_grafems():
-    global k
-    selected_grafs1 = request.form['selected_grafs']
-    zadacha = zadach[1]
-    if selected_grafs.sort() == zadacha.sort():
-        k += 1
-        print(selected_grafs, zadacha)
+    print('123123')
+    if submitgrafems() == 1:
         selected_grafs.clear()
-        return redirect(url_for('test'))
-    print(selected_grafs,zadacha)
-    return jsonify({'status': 'ok'})
+        submitier.append("1")
+
+        return jsonify({'result': 'correct'})
+    else:
+        submitier.append("0")
+        return jsonify({'result': 'incorrect'})
 
 @app.route('/select_image', methods=['POST'])
 def select_image():
