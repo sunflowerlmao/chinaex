@@ -4,6 +4,8 @@ import random
 from flask import Flask, render_template, request, redirect, url_for, jsonify, session
 import os
 import zipfile
+import webbrowser
+
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
@@ -106,7 +108,6 @@ def index():
 def test():
     global selected_grafs,k,getier
     bdload()
-    status = submitgrafems()
     if len(selected_grafs) > 0:
         folder1_images = sortir(selected_grafs)
     else:
@@ -249,4 +250,6 @@ def clear():
 
 
 if __name__ == '__main__':
+    my_url = 'http://127.0.0.1:5000'
+    webbrowser.open(my_url, new=0, autoraise=True)
     app.run(debug=True)
