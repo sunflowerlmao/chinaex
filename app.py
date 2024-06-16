@@ -32,6 +32,7 @@ def bdload():
         db[i][1] = db[i][1][:-1]
         db[i][1] = db[i][1].split(',')
         bd.append(db[i])
+    print(bd)
     database.close()
 
 
@@ -163,7 +164,6 @@ def submit_selected_grafems():
 @app.route('/select_image', methods=['POST'])
 def select_image():
     global selected_grafs
-    global timetest
     image_name = request.form['image_name']
     if isremove:
         selected_grafs.remove(image_name)
